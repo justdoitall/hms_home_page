@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hms_app/entities/users/widgets/widgets.dart';
+import 'package:hms_app/repositories/users/models/users.dart';
+import 'package:hms_app/repositories/users/users_repositories.dart';
 
 class UsersPage extends StatefulWidget {
   const UsersPage({super.key});
@@ -13,29 +15,12 @@ class UsersPage extends StatefulWidget {
 
 class _UsersPageState extends State<UsersPage> {
 
+  List<User>? _usersList;
+
   @override
   Widget build(BuildContext context) {
 
 final theme = Theme.of(context);
-
-final  users =[
-  {
-    'id': 0,
-    'name': "Roman"
-  },
-  {
-    'id': 1,
-    'name': "Denis"
-  },
-  {
-    'id': 2,
-    'name': "Sergey"
-  },
-  {
-    'id': 3,
-    'name': "Kamilla"
-  }
-];
 
 
     return Scaffold(
@@ -55,14 +40,22 @@ final  users =[
 
       ),
   
-      body:ListView.separated(
+      body:(_usersList == null)
+      ? const SizedBox() 
+      : ListView.separated(
         separatorBuilder: (context, index)=>const Divider(),
-        itemCount:users.length,
+        itemCount:_usersList?.length ?? 0,
         itemBuilder: (context, id) { 
-
-          return UserTile(users: users, id:id);
+          return UserTile(users: _usersList??[], id:id);
       }),
-      
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+        _usersList = await UsersRepository().getUsersList();
+        setState(() {
+        });
+      },
+      child: const Icon(Icons.download),
+      ) ,
     );
   }
 }
