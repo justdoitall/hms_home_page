@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hms_app/entities/users/widgets/widgets.dart';
 
 class UsersPage extends StatefulWidget {
   const UsersPage({super.key});
@@ -59,18 +60,9 @@ final  users =[
         itemCount:users.length,
         itemBuilder: (context, id) { 
 
-          return ListTile(
-        title: Text('User ${users[id]["name"]}', style: theme.textTheme.bodyMedium,),
-        subtitle: Text("email@email.em", style: theme.textTheme.labelSmall,),
-        trailing: const Icon(Icons.arrow_forward_ios),
-        onTap: (){
-          Navigator.of(context).pushNamed('/user', arguments: users[id]['name']);
-        },
-      );
+          return UserTile(users: users, id:id);
       }),
       
     );
   }
 }
-
-
