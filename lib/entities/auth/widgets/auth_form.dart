@@ -20,12 +20,18 @@ class AuthFormState extends State<AuthForm> {
   // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
 
-  final authController = TextEditingController();
+  final loginController = TextEditingController();
+  final passwordController = TextEditingController();
+
+
+  
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
-    authController.dispose();
+    loginController.dispose();
+    passwordController.dispose();
+
     super.dispose();
   }
 
@@ -35,10 +41,24 @@ class AuthFormState extends State<AuthForm> {
     return Form(
       key: _formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Text("Auth Form"),
           TextFormField(
-            controller: authController,
+            controller: loginController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter some text';
+              }
+              return null;
+            },
+          ),
+          TextFormField(
+            obscureText: true,
+            enableSuggestions: false,
+            autocorrect: false,
+            controller: passwordController,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter some text';
@@ -55,7 +75,7 @@ class AuthFormState extends State<AuthForm> {
                   // If the form is valid, display a snackbar. In the real world,
                   // you'd often call a server or save the information in a database.
                   ScaffoldMessenger.of(context).showSnackBar(
-                     SnackBar(content: Text('Processing Data. ${authController.text}'), duration: Duration(seconds: 1),),
+                     SnackBar(content: Text('Login: ${loginController.text} password: ${passwordController.text}'), duration: const Duration(seconds: 5),),
                   );
                   Navigator.of(context).pushNamed('/users');
                 }
@@ -63,6 +83,13 @@ class AuthFormState extends State<AuthForm> {
               child: const Text('Submit'),
             ),
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(onPressed: (){}, child: Text('Sign In')),
+              TextButton(onPressed: (){}, child: Text('Forgot password')),
+            ],
+          )
         ],
       ),
     );

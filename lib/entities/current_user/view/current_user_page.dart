@@ -28,12 +28,13 @@ void didChangeDependencies() {
 
   print(args);
   
-  userName = args as String;
+  userName = args;
 
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
   }
 
+  @override
   Widget build(BuildContext context) {
     return  Scaffold(
       appBar: AppBar(title: Text(userName ?? '..'),),

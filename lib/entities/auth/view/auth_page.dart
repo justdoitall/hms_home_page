@@ -15,7 +15,10 @@ class _AuthPageState extends State<AuthPage> {
      
     return  Scaffold(
       appBar: AppBar(title: const Text("HMS APP: AUTH"),),
-      body: const AuthForm(),
+      body: const Padding(
+        padding:  EdgeInsets.all(8.0),
+        child:  AuthForm(),
+      ),
     );
   }
 }
