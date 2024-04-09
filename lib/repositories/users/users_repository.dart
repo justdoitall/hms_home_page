@@ -1,6 +1,16 @@
 import 'package:dio/dio.dart';
-import 'package:hms_app/repositories/users/models/users.dart';
-class UsersRepository {
+import 'package:hms_app/repositories/users/users.dart';
+
+class UsersRepository implements InterFaceUsersRepository {
+  UsersRepository(
+    {
+      required this.dio
+    }
+    );
+
+  final Dio dio;
+
+  @override
   Future<List<User>> getUsersList() async {
     final response = await Dio().get('https://homqmfp-app.apms.io/api/user/');
 

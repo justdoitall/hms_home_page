@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:hms_app/entities/users/widgets/widgets.dart';
-import 'package:hms_app/repositories/users/models/users.dart';
-import 'package:hms_app/repositories/users/users_repositories.dart';
+import 'package:hms_app/repositories/users/users.dart';
 
 class UsersPage extends StatefulWidget {
   const UsersPage({super.key});
@@ -16,6 +16,12 @@ class UsersPage extends StatefulWidget {
 class _UsersPageState extends State<UsersPage> {
 
   List<User>? _usersList;
+
+  @override
+  void initState() {
+    _getUsers();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,21 +47,21 @@ final theme = Theme.of(context);
       ),
   
       body:(_usersList == null)
-      ? const SizedBox() 
+      ? const Center(child:  CircularProgressIndicator()) 
       : ListView.separated(
         separatorBuilder: (context, index)=>const Divider(),
         itemCount:_usersList?.length ?? 0,
         itemBuilder: (context, id) { 
           return UserTile(users: _usersList??[], id:id);
       }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-        _usersList = await UsersRepository().getUsersList();
-        setState(() {
-        });
-      },
-      child: const Icon(Icons.download),
-      ) ,
+      
     );
+  }
+
+  Future<void> _getUsers() async {
+    _usersList = await GetIt.I<InterFaceUsersRepository>().getUsersList();
+    setState(() {
+      
+    });
   }
 }
