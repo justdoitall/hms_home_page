@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hms_app/entities/users/bloc/users_bloc.dart';
 import 'package:hms_app/entities/users/widgets/widgets.dart';
 import 'package:hms_app/repositories/users/users.dart';
 
@@ -15,11 +19,11 @@ class UsersPage extends StatefulWidget {
 
 class _UsersPageState extends State<UsersPage> {
 
-  List<User>? _usersList;
+  final _usersPageBloc = UsersBloc(GetIt.I<InterFaceUsersRepository>());
 
   @override
   void initState() {
-    _getUsers();
+    _usersPageBloc.add(GetUsersList());
     super.initState();
   }
 
@@ -46,22 +50,46 @@ final theme = Theme.of(context);
 
       ),
   
-      body:(_usersList == null)
-      ? const Center(child:  CircularProgressIndicator()) 
-      : ListView.separated(
-        separatorBuilder: (context, index)=>const Divider(),
-        itemCount:_usersList?.length ?? 0,
-        itemBuilder: (context, id) { 
-          return UserTile(users: _usersList??[], id:id);
-      }),
-      
+      body: RefreshIndicator(
+        onRefresh: () async {
+          final completer = Completer();
+           _usersPageBloc.add(GetUsersList(completer: completer));
+           return completer.future;
+        },
+        child: BlocBuilder<UsersBloc, UsersState>(
+          bloc: _usersPageBloc,
+          builder: (context, state) {
+        
+            if(state is UsersLoaded) {
+              return ListView.separated(
+                separatorBuilder: (context, index)=>const Divider(),
+                itemCount:state.usersList.length,
+                itemBuilder: (context, id) { 
+                  return UserTile(users: state.usersList, id:id);
+              });
+            }
+        
+            if(state is UsersLoadingFailure) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Something goes wrong'),
+                    Text('Try again later', style: theme.textTheme.labelSmall,),
+                    TextButton(onPressed: (){
+                       _usersPageBloc.add(GetUsersList());
+                    }, child: const Text('Try again')),
+                    OutlinedButton(onPressed: (){}, child: const Text('Try again')),
+                    ElevatedButton(onPressed: (){}, child: const Text('Try again')),
+                  ],
+                ),
+              );
+            }
+        
+            return const Center(child: CircularProgressIndicator());
+          },
+        ),
+      )      
     );
-  }
-
-  Future<void> _getUsers() async {
-    _usersList = await GetIt.I<InterFaceUsersRepository>().getUsersList();
-    setState(() {
-      
-    });
   }
 }
