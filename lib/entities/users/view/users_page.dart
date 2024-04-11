@@ -31,8 +31,6 @@ class _UsersPageState extends State<UsersPage> {
   Widget build(BuildContext context) {
 
 final theme = Theme.of(context);
-
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: theme.colorScheme.inversePrimary,
@@ -42,7 +40,6 @@ final theme = Theme.of(context);
             Text('HMS App: User List', style: theme.textTheme.titleLarge,),
           ],
         ),
-        // leading:  BackButton(onPressed:_goBack)
         leading: Padding(
             padding: const EdgeInsets.all(8.0),
             child: SvgPicture.asset('assets/svg/icon.svg', width: 25, height: 25,),

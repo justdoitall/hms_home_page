@@ -20,7 +20,7 @@ class UserTile extends StatelessWidget {
             subtitle: Text(users[id].email, style: theme.textTheme.labelSmall,),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: (){
-    Navigator.of(context).pushNamed('/user', arguments: users[id].name);
+    Navigator.of(context).pushNamed('/user', arguments: users[id].id);
             },
           );
   }
