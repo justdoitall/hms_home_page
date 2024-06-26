@@ -1,0 +1,7 @@
+{
+    "hello": "Привет!",
+    "app_title": "HMS Приложение",
+    "authTitle": "HMS: Авторизация",
+    "signUp": "Регистрация",
+    "forgotPassword": "Забыли пароль"
+  }
