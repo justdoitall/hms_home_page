@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hms_app/repositories/users/models/users.dart';
 
 class UserTile extends StatelessWidget {
@@ -20,7 +21,7 @@ class UserTile extends StatelessWidget {
             subtitle: Text(users[id].email, style: theme.textTheme.labelSmall,),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: (){
-              Navigator.of(context).pushNamed('/user', arguments: users[id].id);
+                context.go('/users/${users[id].id}');
             },
           );
   }

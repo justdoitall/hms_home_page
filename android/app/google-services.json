@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "112500757572",
+    "project_id": "hms-tortuga",
+    "storage_bucket": "hms-tortuga.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:112500757572:android:f974c848c7a86077df9811",
+        "android_client_info": {
+          "package_name": "com.tortuga.hms_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfe5ba6-2Tn48NAnGibhKhRpuy3JIzO3A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

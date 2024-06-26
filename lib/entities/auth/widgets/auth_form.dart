@@ -1,95 +1,61 @@
 import 'package:flutter/material.dart';
+import 'package:hms_app/theme/theme.dart';
 
-// Create a Form widget.
 class AuthForm extends StatefulWidget {
-  const AuthForm({super.key});
+  const AuthForm(
+      {super.key,
+      required this.formKey,
+      required this.passwordController,
+      required this.loginController});
+  final GlobalKey<FormState> formKey;
+  final TextEditingController loginController;
+  final TextEditingController passwordController;
 
   @override
-  AuthFormState createState() {
-    return AuthFormState();
-  }
+  State<AuthForm> createState() => _AuthFormState();
 }
 
-// Create a corresponding State class.
-// This class holds data related to the form.
-class AuthFormState extends State<AuthForm> {
-  // Create a global key that uniquely identifies the Form widget
-  // and allows validation of the form.
-  //
-  // Note: This is a GlobalKey<FormState>,
-  // not a GlobalKey<MyCustomFormState>.
-  final _formKey = GlobalKey<FormState>();
-
-  final loginController = TextEditingController();
-  final passwordController = TextEditingController();
-
-
-  
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is disposed.
-    loginController.dispose();
-    passwordController.dispose();
-
-    super.dispose();
-  }
-
+class _AuthFormState extends State<AuthForm> {
   @override
   Widget build(BuildContext context) {
-    // Build a Form widget using the _formKey created above.
     return Form(
-      key: _formKey,
+      key: widget.formKey,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Auth Form"),
           TextFormField(
-            controller: loginController,
+            decoration:
+                CustomInputDecoration(hintText: "Номер телефона / почта"),
+            controller: widget.loginController,
             validator: (value) {
+              // String pattern = r'@';
+              // RegExp regex = RegExp(pattern);
               if (value == null || value.isEmpty) {
-                return 'Please enter some text';
-              }
+                return 'Введите номер телефона или почту';
+              } 
+              // else if (!regex.hasMatch(value)) {
+              //   return "Некорректный Email адрес";
+              // }
               return null;
             },
           ),
+          const SizedBox(
+            height: 20,
+          ),
           TextFormField(
+            decoration: CustomInputDecoration(hintText: "Пароль"),
             obscureText: true,
             enableSuggestions: false,
             autocorrect: false,
-            controller: passwordController,
+            controller: widget.passwordController,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter some text';
+                return 'Введите пароль';
               }
               return null;
             },
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: ElevatedButton(
-              onPressed: () {
-                // Validate returns true if the form is valid, or false otherwise.
-                if (_formKey.currentState!.validate()) {
-                  // If the form is valid, display a snackbar. In the real world,
-                  // you'd often call a server or save the information in a database.
-                  ScaffoldMessenger.of(context).showSnackBar(
-                     SnackBar(content: Text('Login: ${loginController.text} password: ${passwordController.text}'), duration: const Duration(seconds: 5),),
-                  );
-                  Navigator.of(context).pushNamed('/users');
-                }
-              },
-              child: const Text('Submit'),
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextButton(onPressed: (){}, child: Text('Sign In')),
-              TextButton(onPressed: (){}, child: Text('Forgot password')),
-            ],
-          )
         ],
       ),
     );
