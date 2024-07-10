@@ -6,4 +6,10 @@ abstract class InterfaceAuthRepository {
   Future<AuthResponse> getVerification(String code);
   Future<AuthResponse> setPersonalData(PersonalData data);
   Future<void> repeatCodeSend();
+  Future<AuthResponse> refreshToken();
+  Future<Token> resetPassword(String email);
+  Future<AuthResponse> getPassVerification(String code);
+  Future<AuthResponse> changePassword(String password);
+  // Future<AuthResponse> getRequest();
+
 }

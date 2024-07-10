@@ -9,23 +9,25 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-     appBar: AppBar(
-      leading: const Icon(Icons.person),
-      title: const Text("HMS"),
-     ),
-      body: navigationShell,
-      bottomNavigationBar: BottomNavigationBar(
-        unselectedItemColor: Colors.black,
-        selectedItemColor: Colors.red,
-        /// Лист элементов для нижнего навигационного бара.
-        items: _buildBottomNavBarItems,
-        /// Текущий индекс нижнего навигационного бара.
-        currentIndex: navigationShell.currentIndex,
-        /// Обработчик нажатия на элемент нижнего навигационного бара.
-        onTap: (index) => navigationShell.goBranch(
-          index,
-          initialLocation: index == navigationShell.currentIndex,
+    return SafeArea(
+      child: Scaffold(
+      //  appBar: AppBar(
+      //   leading: const Icon(Icons.person),
+      //   title: const Text("HMS"),
+      //  ),
+        body: navigationShell,
+        bottomNavigationBar: BottomNavigationBar(
+          unselectedItemColor: Colors.black,
+          selectedItemColor: Colors.red,
+          /// Лист элементов для нижнего навигационного бара.
+          items: _buildBottomNavBarItems,
+          /// Текущий индекс нижнего навигационного бара.
+          currentIndex: navigationShell.currentIndex,
+          /// Обработчик нажатия на элемент нижнего навигационного бара.
+          onTap: (index) => navigationShell.goBranch(
+            index,
+            initialLocation: index == navigationShell.currentIndex,
+          ),
         ),
       ),
     );

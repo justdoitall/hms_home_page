@@ -12,6 +12,7 @@ class AuthRepository implements InterfaceAuthRepository {
 
   @override
   Future<Token?> getAuth(String login, String password) async {
+    
     final DataService service = DataService();
 
     final response = await dio
@@ -29,13 +30,12 @@ class AuthRepository implements InterfaceAuthRepository {
     final response = await dio.post("/auth/reg", data: {
       "email": data.login,
       "password": data.password,
-      "referalCode": data.referealCode
+      "referal_code": data.referealCode
     });
 
     final responseData = AuthResponse.fromJson(response.data);
     await service.addItem(CONST.authToken, responseData.token.access);
     await service.addItem(CONST.refreshToken, responseData.token.refresh);
-
     return responseData;
   }
 
@@ -43,7 +43,6 @@ class AuthRepository implements InterfaceAuthRepository {
   Future<AuthResponse> getVerification(String code) async {
     final DataService service = DataService();
     String token = await service.readItem(CONST.authToken);
-      print(code);
 
     final response = await dio.post(
       "/auth/reg",
@@ -71,7 +70,7 @@ class AuthRepository implements InterfaceAuthRepository {
         "last_name": data.lastName,
         "weight": data.weight,
         "height": data.height,
-        "nickname": data.nickName ?? ""
+        // "nickname": data.nickName ?? ""
       },
       options: Options(
         headers: {"Authorization": "Bearer $token"},
@@ -94,7 +93,83 @@ class AuthRepository implements InterfaceAuthRepository {
       "/auth/resendCode",
       options: Options(
         headers: {"Authorization": "Bearer $token"},
+        
       ),
     );
   }
+
+  @override
+  Future<AuthResponse> refreshToken() async {
+    final service = DataService();
+    String refreshToken = await service.readItem(CONST.refreshToken);
+
+    final response = await dio.get("/auth/refresh",
+    options: Options(
+        headers: {"Authorization": "Bearer $refreshToken"},
+      ),);
+
+    final responseData = AuthResponse.fromJson(response.data);
+    await service.addItem(CONST.authToken, responseData.token.access);
+    await service.addItem(CONST.refreshToken, responseData.token.refresh);
+    return responseData;
+  }
+
+  @override
+  Future<Token> resetPassword(String email) async {
+    final service = DataService();
+
+    final response = await dio.post("/auth/resetPass",
+    data: {"email": email});
+    final responseData = AuthResponse.fromJson(response.data);
+    await service.addItem(CONST.authToken, responseData.token.access);
+    await service.addItem(CONST.refreshToken, responseData.token.access);
+
+    return responseData.token;
+  }
+
+   @override
+  Future<AuthResponse> getPassVerification(String code) async {
+    final DataService service = DataService();
+    String token = await service.readItem(CONST.authToken);
+    final response = await dio.post(
+      "/auth/resetPass",
+      data: {"code": code},
+      options: Options(
+        headers: {"Authorization": "Bearer $token"},
+      ),
+    );
+
+    final responseData = AuthResponse.fromJson(response.data);
+    await service.addItem(CONST.authToken, responseData.token.access);
+    await service.addItem(CONST.refreshToken, responseData.token.refresh);
+
+    return responseData;
+  }
+
+  @override
+  Future<AuthResponse> changePassword(String password) async {
+    final DataService service = DataService();
+    String token = await service.readItem(CONST.authToken);
+    final response = await dio.post(
+      "/auth/resetPass",
+      data: {"password": password},
+      options: Options(
+        headers: {"Authorization": "Bearer $token"},
+      ),
+    );
+
+    final responseData = AuthResponse.fromJson(response.data);
+    await service.addItem(CONST.authToken, responseData.token.access);
+    await service.addItem(CONST.refreshToken, responseData.token.refresh);
+
+    return responseData;
+  }
+
 }
+
+// enum Handlers { resetPass, refresh, reg }
+
+// Future<AuthResponse> getRequest() {
+
+
+// }

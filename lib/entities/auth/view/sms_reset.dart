@@ -26,7 +26,9 @@ class SmsReset extends StatelessWidget {
                     minimumSize: Size.zero, // Set this
                     padding: EdgeInsets.zero, // and this
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    context.push("/tech-sup");
+                  },
                   child: const Text("Нет доступа к телефону")),
               SizedBox(
                   width: MediaQuery.of(context).size.width,

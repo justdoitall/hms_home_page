@@ -6,6 +6,15 @@ part of 'auth.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+CommonError _$CommonErrorFromJson(Map<String, dynamic> json) => CommonError(
+      json['text'] as String,
+    );
+
+Map<String, dynamic> _$CommonErrorToJson(CommonError instance) =>
+    <String, dynamic>{
+      'text': instance.text,
+    };
+
 Token _$TokenFromJson(Map<String, dynamic> json) => Token(
       access: json['access'] as String,
       refresh: json['refresh'] as String,

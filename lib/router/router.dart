@@ -31,6 +31,12 @@ class GoRouteGuarded extends GoRoute {
       if(!await service.isFirstEntry()) {
         return "/personal-input";
       }
+      if(!await service.isVerifiedOnPasswordChange()) {
+        return "/reset?from=email";
+      }
+      if(!await service.isPasswordChanged()) {
+        return "/change-password";
+      }
       return null;
     };
   }
@@ -52,7 +58,7 @@ final router = GoRouter(
         GoRoute(
           path: '/email-reset',
           pageBuilder: (context, state) {
-            return const NoTransitionPage(child: EmailReset());
+            return const NoTransitionPage(child: EmailResetScreen());
           },
         ),
         GoRoute(
@@ -66,6 +72,19 @@ final router = GoRouter(
           path: '/reset',
           pageBuilder: (context, state) {
             return  NoTransitionPage(child: ResetScreen(from: state.uri.queryParameters["from"]!,));
+          },
+        ),
+        GoRoute(
+          path: '/change-password',
+          pageBuilder: (context, state) {
+            return const NoTransitionPage(child: ChangePasswordScreen());
+          },
+        ),
+        GoRoute(
+          name: "tech-sup",
+          path: '/tech-sup',
+          pageBuilder: (context, state) {
+            return const  NoTransitionPage(child: TechSupportScreen());
           },
         ),
         GoRoute(
