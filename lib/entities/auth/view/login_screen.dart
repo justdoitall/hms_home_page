@@ -11,26 +11,45 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<CommonFormInput> inputsList = [
+      CommonFormInput(inputKey: "login", label: "Почта", isValidated: true),
+      CommonFormInput(
+          inputKey: "password",
+          label: "Пароль",
+          isObscure: true,
+          isValidated: true),
+    ];
+
     return BlocProvider(
       create: (context) => AuthCubit(GetIt.I<InterfaceAuthRepository>()),
       child: BlocConsumer<AuthCubit, AuthCubitState>(builder: (context, state) {
         return state.when(initial: () {
-          return const ScreenLayout();
+          return ScreenLayout(
+            inputsList: inputsList,
+          );
         }, loading: () {
-          return const Center(
-              child: SizedBox(
-                  width: 20, height: 20, child: CircularProgressIndicator()));
+          return ScreenLayout(
+            inputsList: inputsList,
+            state: 'loading',
+          );
         }, success: (auth) {
-          return const ScreenLayout();
+          return ScreenLayout(
+            inputsList: inputsList,
+          );
         }, error: (e) {
-          return const ScreenLayout();
+          return ScreenLayout(
+            inputsList: inputsList,
+          );
         });
       }, listener: (context, state) {
         state.when(
             initial: () {},
             loading: () {},
             success: (token) {
-              ScaffoldMessenger.of(context).showSnackBar(
+              for (var element in inputsList) {
+                element.controller.text = "";
+              }
+              ScaffoldMessenger.of(context)..hideCurrentSnackBar()..showSnackBar(
                 SnackBar(
                   content: Text('TOKEN:${token.access}'),
                   duration: const Duration(seconds: 5),
@@ -39,7 +58,7 @@ class LoginScreen extends StatelessWidget {
               context.go("/profile");
             },
             error: (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
+              ScaffoldMessenger.of(context)..hideCurrentSnackBar()..showSnackBar(
                 SnackBar(
                   content: Text(e),
                   duration: const Duration(seconds: 5),
@@ -52,10 +71,10 @@ class LoginScreen extends StatelessWidget {
 }
 
 class ScreenLayout extends StatefulWidget {
-  const ScreenLayout({
-    super.key,
-  });
-
+  const ScreenLayout(
+      {super.key, this.state = "initial", required this.inputsList});
+  final String? state;
+  final List<CommonFormInput> inputsList;
   @override
   State<ScreenLayout> createState() => _ScreenLayoutState();
 }
@@ -63,16 +82,14 @@ class ScreenLayout extends StatefulWidget {
 class _ScreenLayoutState extends State<ScreenLayout> {
   @override
   Widget build(BuildContext context) {
-    final loginController = TextEditingController();
-    final passwordController = TextEditingController();
     final formKey = GlobalKey<FormState>();
-
-    @override
-    void dispose() {
-      loginController.dispose();
-      passwordController.dispose();
-
-      super.dispose();
+    logIn() {
+      final data = {
+        for (var v in widget.inputsList) v.inputKey: v.controller.text
+      };
+      if (formKey.currentState!.validate()) {
+        context.read<AuthCubit>().getAuth(data["login"]!, data["password"]!);
+      }
     }
 
     return Column(
@@ -83,48 +100,36 @@ class _ScreenLayoutState extends State<ScreenLayout> {
         Padding(
           padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AuthForm(
-                  formKey: formKey,
-                  passwordController: passwordController,
-                  loginController: loginController),
-              TextButton(
-                  style: TextButton.styleFrom(
-                    minimumSize: Size.zero, // Set this
-                    padding: EdgeInsets.zero, // and this
-                  ),
-                  onPressed: () {
-                    context.push('/email-reset');
-                  },
-                  child: const Text("Забыли пароль?")),
-              const SizedBox(
-                height: 10,
+              CommonForm(
+                inputsList: widget.inputsList,
+                formKey: formKey,
+                isDisabled: widget.state != null && widget.state == "loading",
               ),
-              SizedBox(
-                height: 60,
-                width: MediaQuery.of(context).size.width,
-                child: ElevatedButton(
-                    onPressed: () {
-                      if (formKey.currentState!.validate()) {
-                        context.read<AuthCubit>().getAuth(
-                            loginController.text, passwordController.text);
-                      }
-                    },
-                    child: const Text("Войти")),
+              CommonTextButton(
+                isSmall: true,
+                onPressed: () {
+                  context.push('/email-reset');
+                },
+                child: const Text("Забыли пароль?"),
               ),
               const SizedBox(
                 height: 10,
               ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 60,
-                child: TextButton(
+              CommonElevateButton(
+                isDisabled: widget.state != null && widget.state == "loading",
+                onPressed: logIn,
+                child: const Text("Войти"),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              CommonTextButton(
                   onPressed: () {
                     context.push('/onboarding');
                   },
-                  child: const Text("Зарегистрироваться"),
-                ),
-              ),
+                  child: const Text("Зарегистрироваться"))
             ],
           ),
         ),

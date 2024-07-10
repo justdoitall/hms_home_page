@@ -1,5 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get_it/get_it.dart';
 import 'package:hms_app/const.dart';
+import 'package:hms_app/repositories/auth/auth.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
 class DataService {
@@ -48,9 +50,11 @@ class DataService {
     final refreshToken = await readItem(CONST.refreshToken);
     if (isExpired(authToken)) {
       try {
+
         await getRefresh(refreshToken);
         return true;
       } catch (e) {
+        print("cant refresh");
         return false;
       }
     } else {
@@ -66,6 +70,24 @@ class DataService {
     return false;
   }
 
+  Future<bool> isVerifiedOnPasswordChange() async {
+    final decodedToken  = decodeToken(await readItem(CONST.authToken));
+    if(decodedToken["verify"] == null || decodedToken["verify"]) {
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> isPasswordChanged() async {
+    final decodedToken  = decodeToken(await readItem(CONST.authToken));
+    print(decodedToken);
+    if(decodedToken["pw_changed"] == null || decodedToken["pw_changed"]) {
+      return true;
+    }
+    return false;
+  }
+
+
    Future<bool> isFirstEntry() async {
     final decodedToken  = decodeToken(await readItem(CONST.authToken));
     if(decodedToken["first_entry"] == null || decodedToken["first_entry"]) {
@@ -75,7 +97,11 @@ class DataService {
   }
 
   bool isExpired(token) {
-    return JwtDecoder.isExpired(token);
+    try {
+      return JwtDecoder.isExpired(token);
+    } catch(e) {
+      return true;
+    }
   }
 
   Map<String, dynamic> decodeToken(String token) {
@@ -83,6 +109,7 @@ class DataService {
   }
 
   Future<void> getRefresh(String refreshToken) async {
+      await GetIt.I<InterfaceAuthRepository>().refreshToken();
 
   }
 }

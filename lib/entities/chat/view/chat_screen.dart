@@ -9,8 +9,7 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
+    return  Container(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -27,7 +26,6 @@ class ChatScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
     );
   }
 }

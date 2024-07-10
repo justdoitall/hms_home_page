@@ -16,20 +16,22 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<CommonFormInput> inputsList = [
     CommonFormInput(
-        isValidated: false, label: "Код входа в приложение", inputKey: "ref"),
-    CommonFormInput(isValidated: false, label: "Почта", inputKey: "login"),
+        isValidated: true, label: "Код входа в приложение", inputKey: "ref"),
+    CommonFormInput(isValidated: true, label: "Почта", inputKey: "login"),
     CommonFormInput(
-        isValidated: false,
+        isValidated: true,
         label: "Пароль",
         inputKey: "password",
         repeatedTo: "repeat-password",
-        repeatValidationText: "Пароли не совпадают"),
+        repeatValidationText: "Пароли не совпадают",
+        isObscure: true),
     CommonFormInput(
-        isValidated: false,
+        isValidated: true,
         label: "Повторите пароль",
         inputKey: "repeat-password",
         repeatedTo: "password",
-        repeatValidationText: "Пароли не совпадают")
+        repeatValidationText: "Пароли не совпадают",
+        isObscure: true)
   ];
   final _formKey = GlobalKey<FormState>();
 
@@ -43,10 +45,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             return state.when(
                 initial: () =>
                     OnboardingLayout(inputsList: inputsList, formKey: _formKey),
-                loading: () =>
-                    CircularProgressIndicator(),
-                success: (r) =>
-                    OnboardingLayout(inputsList: inputsList, formKey: _formKey),
+                loading: () => OnboardingLayout(
+                      inputsList: inputsList,
+                      formKey: _formKey,
+                      state: "loading",
+                    ),
+                success: (r) => const SizedBox(),
                 error: (e) => OnboardingLayout(
                     inputsList: inputsList, formKey: _formKey));
           },
@@ -55,10 +59,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 initial: () {},
                 loading: () {},
                 success: (data) {
+                  for (var element in inputsList) {
+                    element.controller.text = "";
+                  }
                   context.push('/verification');
                 },
                 error: (e) {
-                  print(e);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(e),
+                      duration: const Duration(seconds: 5),
+                    ),
+                  );
                 });
           },
         ));
@@ -67,6 +79,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
 class OnboardingLayout extends StatelessWidget {
   const OnboardingLayout({
+    this.state = "initial",
     super.key,
     required this.inputsList,
     required GlobalKey<FormState> formKey,
@@ -74,13 +87,14 @@ class OnboardingLayout extends StatelessWidget {
 
   final List<CommonFormInput> inputsList;
   final GlobalKey<FormState> _formKey;
+  final String state;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         const Header(
-          title: "Вход в\nприложение",
+          title: "Регистрация\nв приложении",
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -89,44 +103,37 @@ class OnboardingLayout extends StatelessWidget {
               CommonForm(
                 inputsList: inputsList,
                 formKey: _formKey,
+                isDisabled: state == "loading",
               ),
               const SizedBox(
                 height: 10,
               ),
-              SizedBox(
-                height: 60,
-                width: MediaQuery.of(context).size.width,
-                child: ElevatedButton(
-                    onPressed: () {
-                      final data = {
-                        for (var v in inputsList) v.inputKey: v.controller.text
-                      };
-                      if (_formKey.currentState!.validate()) {
-                        final RegistrationData registrationData =
-                            RegistrationData(
-                                login: data["login"]!,
-                                password: data["password"]!,
-                                referealCode: data["ref"]!);
-                        context
-                            .read<OnboardingCubit>()
-                            .getRegistration(registrationData);
-                      }
-                    },
-                    child: const Text("Зарегистрироваться")),
+              CommonElevateButton(
+                isDisabled: state == "loading",
+                onPressed: () {
+                  final data = {
+                    for (var v in inputsList) v.inputKey: v.controller.text
+                  };
+                  if (_formKey.currentState!.validate()) {
+                    final RegistrationData registrationData = RegistrationData(
+                        login: data["login"]!,
+                        password: data["password"]!,
+                        referealCode: data["ref"]!);
+                    context
+                        .read<OnboardingCubit>()
+                        .getRegistration(registrationData);
+                  }
+                },
+                child: const Text("Зарегистрироваться"),
               ),
               const SizedBox(
                 height: 10,
               ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 60,
-                child: TextButton(
+              CommonTextButton(
                   onPressed: () {
                     context.go('/login');
                   },
-                  child: const Text("Войти"),
-                ),
-              )
+                  child: const Text("Войти"))
             ],
           ),
         )

@@ -26,6 +26,21 @@ class VerificationCubit extends Cubit<VerificationState> {
     }
   }
 
+  getPassVerification(String code) async {
+    try {
+      emit(const VerificationState.loading());
+
+      final AuthResponse response = await authRepository.getPassVerification(code);
+
+
+      emit(VerificationState.success(response: response));
+    } catch (e) {
+      emit(
+        VerificationState.error(errorHandler(e)),
+      );
+    }
+  }
+
   repeadCodeSend() async {
     try {
       await authRepository.repeatCodeSend();

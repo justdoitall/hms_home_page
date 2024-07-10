@@ -28,6 +28,17 @@ class PersonalData {
 }
 
 @JsonSerializable()
+class CommonError {
+  CommonError(this.text);
+
+  String text;
+
+  factory CommonError.fromJson(Map<String, dynamic> json) => _$CommonErrorFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CommonErrorToJson(this);
+}
+
+@JsonSerializable()
 class Token {
   final String access;
   final String refresh;

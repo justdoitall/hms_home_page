@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hms_app/entities/auth/widgets/widgets.dart';
+import 'package:hms_app/repositories/auth/auth.dart';
+import 'package:hms_app/repositories/data_service.dart';
+import 'package:hms_app/state/verification_state/verification_cubit.dart';
 
 class ResetScreen extends StatelessWidget {
   const ResetScreen({super.key, required this.from});
@@ -10,9 +15,47 @@ class ResetScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
-    final inputsList = [
-      CommonFormInput(inputKey: "Код потверждения", label: "Код потверждения")
-    ];
+    final input = CommonFormInput(
+        inputKey: "code", label: "Код потверждения", isValidated: true);
+    return BlocProvider(
+      create: (context) =>
+          VerificationCubit(GetIt.I<InterfaceAuthRepository>()),
+      child: BlocConsumer<VerificationCubit, VerificationState>(
+          builder: (context, state) {
+            return state.when(
+                initial: () =>
+                    ResetScreenLayout(input: input, formKey: formKey),
+                loading: () =>
+                    ResetScreenLayout(input: input, formKey: formKey),
+                success: (r) =>
+                    ResetScreenLayout(input: input, formKey: formKey),
+                error: (e) =>
+                    ResetScreenLayout(input: input, formKey: formKey));
+          },
+          listener:(context, state) {
+            state.when(initial: (){}, loading: (){}, success: (r){
+              context.push("/change-password");
+            }, error: (e){
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e)));
+            });
+          },),
+    );
+    //ResetScreenLayout(input: input, formKey: formKey);
+  }
+}
+
+class ResetScreenLayout extends StatelessWidget {
+  const ResetScreenLayout({
+    super.key,
+    required this.input,
+    required this.formKey,
+  });
+
+  final CommonFormInput input;
+  final GlobalKey<FormState> formKey;
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         const Header(title: "Восстановление\nпароля"),
@@ -23,50 +66,30 @@ class ResetScreen extends StatelessWidget {
             children: [
               const Text("На вашу почту было отправлено сообщение с кодом"),
               CommonForm(
-                inputsList: inputsList,
+                inputsList: [input],
                 formKey: formKey,
               ),
               const SizedBox(
                 height: 20,
               ),
-              // TextButton(
-              //     style: TextButton.styleFrom(
-              //       minimumSize: Size.zero, // Set this
-              //       padding: EdgeInsets.zero, // and this
-              //     ),
-              //     onPressed: () {
-              //       context.push('/sms-reset');
-              //     },
-              //     child: const Text("Нет доступа к почте")),
-              SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: 60,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        final data = {
-                          for (var v in inputsList)
-                            v.inputKey: v.controller.text
-                        };
-                        if (formKey.currentState!.validate()) {
-                          for (var element in inputsList) {
-                            print(element.controller.text);
-                            print("FROM: $from");
-                          }
-                        }
-                      },
-                      child: const Text("Отправить код подтвержения"))),
+              CommonElevateButton(
+                  onPressed: () {
+                    final data = input.controller.text;
+                    if (formKey.currentState!.validate()) {
+                      context.read<VerificationCubit>().getPassVerification(data);
+                    }
+                  },
+                  child: const Text("Отправить код подтвержения")),
               const SizedBox(
                 height: 12,
               ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 60,
-                child: TextButton(
-                  onPressed: () {
-                    context.pop();
-                  },
-                  child: const Text("Вернуться"),
-                ),
+              CommonTextButton(
+                onPressed: () {
+                  final service = DataService();
+                  service.logOut();
+                  context.go('/login');
+                },
+                child: const Text("Вернуться"),
               ),
             ],
           ),
