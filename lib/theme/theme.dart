@@ -65,3 +65,25 @@ class CustomInputDecoration extends InputDecoration {
   @override
   final fillColor = Colors.white;
 }
+
+
+class CustomInputDecorationDisabled extends InputDecoration {
+  CustomInputDecorationDisabled({required this.hintText});
+
+  @override
+  final String hintText;
+  // final String counterText = ' ';
+  @override
+  final border = OutlineInputBorder(
+    borderRadius: BorderRadius.circular(8.0),
+    borderSide: const BorderSide(
+      width: 0,
+      style: BorderStyle.none,
+    ),
+  );
+  @override
+  final filled = true;
+  @override
+  final fillColor = Color.fromRGBO(127, 140, 141, 1);
+  
+}

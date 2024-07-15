@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hms_app/theme/theme.dart';
 
 class CommonFormInput {
+  
   CommonFormInput(
       {required this.inputKey,
       this.isValidated = false,
@@ -9,23 +10,32 @@ class CommonFormInput {
       this.repeatedTo,
       this.repeatValidationText,
       this.callback,
-      this.isObscure = false});
+      this.isNumber = false,
+      this.isObscure = false,
+      this.fixedController
+       });
 
   String label;
   String? repeatedTo;
   String? repeatValidationText;
   bool isValidated;
   bool isObscure;
+  bool isNumber;
   final String inputKey;
 
   Function? callback;
+  
+  TextEditingController? fixedController;
 
-  TextEditingController controller = TextEditingController();
+  TextEditingController controller =   TextEditingController();
 }
 
 class CommonForm extends StatefulWidget {
   const CommonForm(
-      {super.key, required this.inputsList, required this.formKey, this.isDisabled = false});
+      {super.key,
+      required this.inputsList,
+      required this.formKey,
+      this.isDisabled = false});
   final List<CommonFormInput> inputsList;
   final GlobalKey<FormState> formKey;
   final bool isDisabled;
@@ -36,16 +46,16 @@ class CommonForm extends StatefulWidget {
 
 class _CommonFormState extends State<CommonForm> {
   @override
-  Widget build(BuildContext context) {
-    @override
-    void dispose() {
-      for (var element in widget.inputsList) {
-        element.controller.dispose();
-      }
-
-      super.dispose();
+  void dispose() {
+    super.dispose();
+    for (var element in widget.inputsList) {
+      element.controller.clear();
+      element.controller.dispose();
     }
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Form(
       key: widget.formKey,
       child: Column(
@@ -54,20 +64,17 @@ class _CommonFormState extends State<CommonForm> {
             Column(
               children: [
                 TextFormField(
+                  keyboardType: widget.inputsList[i].isNumber? TextInputType.number : null,
                   enabled: !widget.isDisabled,
                   onChanged: (value) {
                     if (widget.inputsList[i].callback != null) {
                       widget.inputsList[i].callback!(value);
                     }
                   },
-                  onTapOutside: (event) {
-                    FocusManager.instance.primaryFocus?.unfocus();
-                },
-
                   decoration: CustomInputDecoration(
                       hintText: widget.inputsList[i].label),
                   obscureText: widget.inputsList[i].isObscure,
-                  controller: widget.inputsList[i].controller,
+                  controller: widget.inputsList[i].fixedController ?? widget.inputsList[i].controller,
                   validator: (value) {
                     if ((value == null || value.isEmpty) &&
                         widget.inputsList[i].isValidated) {

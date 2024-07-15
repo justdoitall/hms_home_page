@@ -23,6 +23,7 @@ class CommonTextButton extends StatelessWidget {
                 )
               : null,
           onPressed: () {
+            FocusManager.instance.primaryFocus?.unfocus();
             onPressed();
           },
           child: child),

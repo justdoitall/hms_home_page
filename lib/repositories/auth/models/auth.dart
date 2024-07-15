@@ -15,14 +15,12 @@ class RegistrationData {
 class PersonalData {
   String name;
   String lastName;
-  String? nickName;
   String weight;
   String height;
 
   PersonalData(
       {required this.name,
       required this.lastName,
-      this.nickName,
       required this.height,
       required this.weight});
 }
