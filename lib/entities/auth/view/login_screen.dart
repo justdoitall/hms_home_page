@@ -6,20 +6,25 @@ import 'package:hms_app/repositories/auth/auth.dart';
 import 'package:hms_app/state/auth_state/auth_cubit.dart';
 import 'package:go_router/go_router.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<CommonFormInput> inputsList = [
-      CommonFormInput(inputKey: "login", label: "Почта", isValidated: true),
-      CommonFormInput(
-          inputKey: "password",
-          label: "Пароль",
-          isObscure: true,
-          isValidated: true),
-    ];
+  State<LoginScreen> createState() => _LoginScreenState();
+}
 
+class _LoginScreenState extends State<LoginScreen> {
+  final List<CommonFormInput> inputsList = [
+    CommonFormInput(inputKey: "login", label: "Почта", isValidated: true),
+    CommonFormInput(
+        inputKey: "password",
+        label: "Пароль",
+        isObscure: true,
+        isValidated: true),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => AuthCubit(GetIt.I<InterfaceAuthRepository>()),
       child: BlocConsumer<AuthCubit, AuthCubitState>(builder: (context, state) {
@@ -49,44 +54,42 @@ class LoginScreen extends StatelessWidget {
               for (var element in inputsList) {
                 element.controller.text = "";
               }
-              ScaffoldMessenger.of(context)..hideCurrentSnackBar()..showSnackBar(
-                SnackBar(
-                  content: Text('TOKEN:${token.access}'),
-                  duration: const Duration(seconds: 5),
-                ),
-              );
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Text('TOKEN:${token.access}'),
+                    duration: const Duration(seconds: 5),
+                  ),
+                );
               context.go("/profile");
             },
             error: (e) {
-              ScaffoldMessenger.of(context)..hideCurrentSnackBar()..showSnackBar(
-                SnackBar(
-                  content: Text(e),
-                  duration: const Duration(seconds: 5),
-                ),
-              );
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Text(e),
+                    duration: const Duration(seconds: 5),
+                  ),
+                );
             });
       }),
     );
   }
 }
 
-class ScreenLayout extends StatefulWidget {
+class ScreenLayout extends StatelessWidget {
   const ScreenLayout(
       {super.key, this.state = "initial", required this.inputsList});
   final String? state;
   final List<CommonFormInput> inputsList;
-  @override
-  State<ScreenLayout> createState() => _ScreenLayoutState();
-}
 
-class _ScreenLayoutState extends State<ScreenLayout> {
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
     logIn() {
-      final data = {
-        for (var v in widget.inputsList) v.inputKey: v.controller.text
-      };
+      final data = {for (var v in inputsList) v.inputKey: v.controller.text};
       if (formKey.currentState!.validate()) {
         context.read<AuthCubit>().getAuth(data["login"]!, data["password"]!);
       }
@@ -103,9 +106,9 @@ class _ScreenLayoutState extends State<ScreenLayout> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CommonForm(
-                inputsList: widget.inputsList,
+                inputsList: inputsList,
                 formKey: formKey,
-                isDisabled: widget.state != null && widget.state == "loading",
+                isDisabled: state != null && state == "loading",
               ),
               CommonTextButton(
                 isSmall: true,
@@ -118,7 +121,7 @@ class _ScreenLayoutState extends State<ScreenLayout> {
                 height: 10,
               ),
               CommonElevateButton(
-                isDisabled: widget.state != null && widget.state == "loading",
+                isDisabled: state != null && state == "loading",
                 onPressed: logIn,
                 child: const Text("Войти"),
               ),

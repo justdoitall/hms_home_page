@@ -103,6 +103,11 @@ final router = GoRouter(
           pageBuilder: (context, state) {
             return const NoTransitionPage(child: PersonalInfoInputScreen());
           },
+        ),
+        GoRoute(path: '/policy',
+          pageBuilder: (context, state) {
+            return const NoTransitionPage(child: PolicyScreen());
+          },
         )
       ],
       builder: (context, state, child) => AuthScreen(

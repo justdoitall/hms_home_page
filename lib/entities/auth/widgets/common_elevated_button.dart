@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 
 class CommonElevateButton extends StatelessWidget {
   const CommonElevateButton(
-      {super.key, required this.onPressed, this.isDisabled = false, required this.child});
+      {super.key,
+      required this.onPressed,
+      this.isDisabled = false,
+      required this.child});
 
   final bool isDisabled;
   final Function onPressed;
@@ -19,13 +22,14 @@ class CommonElevateButton extends StatelessWidget {
               onPressed: isDisabled
                   ? null
                   : () {
+                      FocusManager.instance.primaryFocus?.unfocus();
                       onPressed();
                     },
               child: isDisabled
                   ? const CircularProgressIndicator(
                       color: Colors.white,
                     )
-                  :  child);
+                  : child);
         },
       ),
     );

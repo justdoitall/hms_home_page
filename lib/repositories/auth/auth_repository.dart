@@ -166,10 +166,3 @@ class AuthRepository implements InterfaceAuthRepository {
   }
 
 }
-
-// enum Handlers { resetPass, refresh, reg }
-
-// Future<AuthResponse> getRequest() {
-
-
-// }
