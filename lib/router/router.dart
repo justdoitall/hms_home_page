@@ -6,6 +6,7 @@ import 'package:hms_app/entities/current_user/current_user.dart';
 import 'package:hms_app/entities/dashboard.dart';
 import 'package:hms_app/entities/doctorsscreen/doctorscenter.dart';
 import 'package:hms_app/entities/food/foodlist.dart';
+import 'package:hms_app/entities/home_screen/view/home_page.dart';
 import 'package:hms_app/entities/physical_activities/activities_screen.dart';
 import 'package:hms_app/entities/profile/profile.dart';
 import 'package:hms_app/entities/users/users.dart';
@@ -165,6 +166,12 @@ final router = GoRouter(
             GoRouteGuarded(
               path: '/center',
               builder: (context, state) => const DoctorCenter(),
+            ),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRouteGuarded(
+              path: '/home',
+              builder: (context, state) => const HomePage(),
             ),
           ]),
         ]),

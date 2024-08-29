@@ -63,6 +63,9 @@ class DashboardScreen extends StatelessWidget {
           icon: Icon(Icons.carpenter),
           label: 'center',
         ),
-
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'homepage',
+        ),
       ];
 }
